@@ -1,0 +1,5 @@
+python-dotenv
+APScheduler
+mysql-connector-python
+pyyaml
+pymysql

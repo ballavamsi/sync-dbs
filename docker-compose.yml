@@ -1,0 +1,17 @@
+version: "3"
+services:
+  bot:
+    container_name: sync_dbs
+    restart: always
+    build: .
+    environment:
+      DBS_FILE: /data/dbs.yaml
+      BACKUP_DIR: /data/backups
+    volumes:
+      - ./data:/data
+    networks:
+      vamsi-docker-net:
+
+networks:
+  vamsi-docker-net:
+    external: true

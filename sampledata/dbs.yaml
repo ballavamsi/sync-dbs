@@ -1,0 +1,13 @@
+- name: db1
+      source:
+        host: db_host2
+        user: user2
+        password: pwd2
+        database: db_name2
+        port: db_port2
+      destination:
+        host: localhost
+        user: user1
+        password: pwd1
+        database: db_name1
+        port: db_port1

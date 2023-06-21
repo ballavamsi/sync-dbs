@@ -1,14 +1,15 @@
 version: "3"
 services:
-  mysql:
+  sync-mysql:
     container_name: syncdbs
     restart: always
     # either build yourself or use the image from docker hub
-    # build: .
-    image: ballavamsi/syncdbs-mysql:latest
+    build: .
+    #image: ballavamsi/syncdbs-mysql:latest
     environment:
-      DBS_FILE: /data/dbs.yaml
+      DBS_FILE: /data/dbs-rev.yaml
       BACKUP_DIR: /data/backups
+      RUN_ON_STARTUP: "1"
     volumes:
       - ./data:/data
     networks:

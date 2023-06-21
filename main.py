@@ -16,7 +16,9 @@ def scheduled_job():
 
 
 if __name__ == "__main__":
-    # scheduled_job()
+    run_on_startup = os.getenv("RUN_ON_STARTUP", "0")
+    if run_on_startup == "1":
+        scheduled_job()
     scheduler = BlockingScheduler(timezone="Asia/Kolkata")
     scheduler.add_job(
         scheduled_job,

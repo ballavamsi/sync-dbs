@@ -60,8 +60,13 @@ def sync_databases(source_con_str, target_con_str):
 
     source_functions = get_functions()
     for function in source_functions:
-        function_name = function[0]
-        sync_functions(function_name)
+        function_name = function[1]
+        sync_functions(target_cnx._database, function_name)
+
+    source_procedures = get_stored_procedures()
+    for procedure in source_procedures:
+        procedure_name = procedure[1]
+        sync_stored_procedures(target_cnx._database, procedure_name)
 
     # Close the cursors and connections
     source_cursor.close()
@@ -85,10 +90,26 @@ def sync_tables(table_name):
         sync_columns(table_name)
 
 
-def sync_functions(function_name):
+def sync_stored_procedures(db_name, procedure_name):
+    # check if the procedure is present in the target database
+    target_cursor.execute(
+        f"SHOW PROCEDURE STATUS WHERE Db = '{db_name}' AND Name = '{procedure_name}'"
+    )
+    if target_cursor.fetchone():
+        target_cursor.execute(f"DROP PROCEDURE {procedure_name}")
+
+    source_cursor.execute(f"SHOW CREATE PROCEDURE {procedure_name}")
+    create_procedure_query = source_cursor.fetchone()[2]
+    # and create the procedure in the target database
+    target_cursor.execute(create_procedure_query)
+    logging.logger.info(f"Created procedure {procedure_name}")
+    target_cnx.commit()
+
+
+def sync_functions(db_name, function_name):
     # check if the function is present in the target database
     target_cursor.execute(
-        f"SHOW FUNCTION STATUS WHERE Db = 'test' AND Name = '{function_name}'"
+        f"SHOW FUNCTION STATUS WHERE Db = '{db_name}' AND Name = '{function_name}'"
     )
     if target_cursor.fetchone():
         target_cursor.execute(f"DROP FUNCTION {function_name}")
@@ -225,6 +246,13 @@ def get_tables():
     source_cursor.execute("SHOW TABLES")
     source_tables = source_cursor.fetchall()
     return source_tables
+
+
+def get_stored_procedures():
+    global source_cnx, target_cnx, source_cursor, target_cursor
+    source_cursor.execute("SHOW PROCEDURE STATUS")
+    source_procedures = source_cursor.fetchall()
+    return source_procedures
 
 
 def get_functions():

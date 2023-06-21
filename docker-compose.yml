@@ -7,7 +7,7 @@ services:
     build: .
     #image: ballavamsi/syncdbs-mysql:latest
     environment:
-      DBS_FILE: /data/dbs-rev.yaml
+      DBS_FILE: /data/dbs.yaml
       BACKUP_DIR: /data/backups
       RUN_ON_STARTUP: "1"
     volumes:
